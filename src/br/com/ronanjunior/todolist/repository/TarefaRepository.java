@@ -1,6 +1,7 @@
 package br.com.ronanjunior.todolist.repository;
 
 import br.com.ronanjunior.todolist.domain.CategoriaDomain;
+import br.com.ronanjunior.todolist.domain.DateManipulacaoDomain;
 import br.com.ronanjunior.todolist.domain.StatusDomain;
 import br.com.ronanjunior.todolist.domain.TarefaDomain;
 
@@ -15,13 +16,16 @@ public class TarefaRepository implements TarefaDomain {
     private List<CategoriaDomain> categorias;
     private StatusDomain status;
 
-    public TarefaRepository(String nome, StatusDomain status) {
+    private DateManipulacaoDomain dateManipulacao;
+
+    public TarefaRepository(String nome, StatusDomain status, DateManipulacaoDomain dateManipulacao) {
         this.nome = nome;
         this.status = status;
         this.descricao = null;
         this.dtTermino = null;
         this.prioridade = 1;
         this.categorias = null;
+        this.dateManipulacao = dateManipulacao;
     }
 
     public String getDescricao() {
@@ -69,7 +73,7 @@ public class TarefaRepository implements TarefaDomain {
         return "TarefaRepository{" +
                 "nome='" + nome + '\'' +
                 ", descricao='" + descricao + '\'' +
-                ", dtTermino=" + dtTermino +
+                ", dtTermino=" + dateManipulacao.converterDateParaString(dtTermino, "dd/MM/yyyy") +
                 ", prioridade=" + prioridade +
                 ", categorias=" + categorias +
                 ", status=" + status +
