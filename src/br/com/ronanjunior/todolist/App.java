@@ -2,18 +2,18 @@ package br.com.ronanjunior.todolist;
 
 import br.com.ronanjunior.todolist.domain.DateManipulacaoDomain;
 import br.com.ronanjunior.todolist.domain.TarefaDomain;
-import br.com.ronanjunior.todolist.repository.CategoriasRepository;
-import br.com.ronanjunior.todolist.repository.DateManipulacaoRepository;
-import br.com.ronanjunior.todolist.repository.StatusRepository;
-import br.com.ronanjunior.todolist.repository.TarefaRepository;
+import br.com.ronanjunior.todolist.domain.TerminalInterativoDomain;
+import br.com.ronanjunior.todolist.repository.*;
 
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Scanner;
 
 public class App {
     final static DateManipulacaoDomain dateManipulacao = new DateManipulacaoRepository();
+    final static TerminalInterativoDomain terminalInterativo = new TerminalInterativoRepository(new Scanner(System.in));
     public static void main(String[] args) {
         TarefaDomain tarefa1 = new TarefaRepository("Task 1", new StatusRepository("A Fazer"), dateManipulacao);
         tarefa1.setCategorias(Arrays.asList(new CategoriasRepository("Dia a Dia"), new CategoriasRepository("Tarefa")));
@@ -24,5 +24,7 @@ public class App {
             System.err.println("ERROR: " + e);
         }
         System.out.println(tarefa1);
+
+        terminalInterativo.runTerminalInterativo();
     }
 }
