@@ -7,6 +7,7 @@ import br.com.ronanjunior.todolist.domain.TarefaDomain;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 public class TarefaRepository implements TarefaDomain {
     private String nome;
@@ -28,6 +29,36 @@ public class TarefaRepository implements TarefaDomain {
         this.dateManipulacao = dateManipulacao;
     }
 
+    public TarefaRepository(String nome, StatusDomain status, DateManipulacaoDomain dateManipulacao, Date dtTermino) {
+        this.nome = nome;
+        this.status = status;
+        this.descricao = null;
+        this.dtTermino = dtTermino;
+        this.prioridade = 1;
+        this.categorias = null;
+        this.dateManipulacao = dateManipulacao;
+    }
+
+    public TarefaRepository(
+            String nome,
+            String descricao,
+            Date dtTermino,
+            Integer prioridade,
+            StatusDomain status,
+            DateManipulacaoDomain dateManipulacao
+    ) {
+        this.nome = nome;
+        this.descricao = descricao;
+        this.dtTermino = dtTermino;
+        this.prioridade = prioridade;
+        this.categorias = null;
+        this.status = status;
+        this.dateManipulacao = dateManipulacao;
+    }
+
+    public String getNome() {
+        return nome;
+    }
     public String getDescricao() {
         return descricao;
     }
@@ -66,6 +97,19 @@ public class TarefaRepository implements TarefaDomain {
 
     public void setStatus(StatusDomain status) {
         this.status = status;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TarefaRepository that = (TarefaRepository) o;
+        return Objects.equals(nome, that.nome);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(nome);
     }
 
     @Override
