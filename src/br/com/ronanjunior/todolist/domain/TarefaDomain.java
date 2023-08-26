@@ -4,6 +4,8 @@ import java.util.Date;
 import java.util.List;
 
 public interface TarefaDomain {
+    void adicionarCategoria(CategoriaDomain categoria);
+    void setNome(String nome);
     String getNome();
     String getDescricao();
     void setDescricao(String descricao);
@@ -13,6 +15,6 @@ public interface TarefaDomain {
     void setPrioridade(Integer prioridade);
     List<CategoriaDomain> getCategorias();
     void setCategorias(List<CategoriaDomain> categorias);
-    StatusDomain getStatus();
-    void setStatus(StatusDomain status);
+    String getStatus();
+    void setStatus(String status);
 }

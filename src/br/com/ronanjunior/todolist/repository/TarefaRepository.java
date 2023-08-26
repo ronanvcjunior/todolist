@@ -2,9 +2,9 @@ package br.com.ronanjunior.todolist.repository;
 
 import br.com.ronanjunior.todolist.domain.CategoriaDomain;
 import br.com.ronanjunior.todolist.domain.DateManipulacaoDomain;
-import br.com.ronanjunior.todolist.domain.StatusDomain;
 import br.com.ronanjunior.todolist.domain.TarefaDomain;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -15,27 +15,47 @@ public class TarefaRepository implements TarefaDomain {
     private Date dtTermino;
     private Integer prioridade;
     private List<CategoriaDomain> categorias;
-    private StatusDomain status;
+    private String status;
 
     private DateManipulacaoDomain dateManipulacao;
 
-    public TarefaRepository(String nome, StatusDomain status, DateManipulacaoDomain dateManipulacao) {
+    public TarefaRepository(DateManipulacaoDomain dateManipulacao) {
+        this.nome = null;
+        this.status = null;
+        this.descricao = null;
+        this.dtTermino = null;
+        this.prioridade = null;
+        this.categorias = new ArrayList<>();
+        this.dateManipulacao = dateManipulacao;
+    }
+
+    public TarefaRepository(String nome, String status, DateManipulacaoDomain dateManipulacao) {
         this.nome = nome;
         this.status = status;
         this.descricao = null;
         this.dtTermino = null;
         this.prioridade = 1;
-        this.categorias = null;
+        this.categorias = new ArrayList<>();
         this.dateManipulacao = dateManipulacao;
     }
 
-    public TarefaRepository(String nome, StatusDomain status, DateManipulacaoDomain dateManipulacao, Date dtTermino) {
+    public TarefaRepository(String nome, Date dtTermino, DateManipulacaoDomain dateManipulacao) {
+        this.nome = nome;
+        this.status = "ToDo";
+        this.descricao = null;
+        this.dtTermino = dtTermino;
+        this.prioridade = 1;
+        this.categorias = new ArrayList<>();
+        this.dateManipulacao = dateManipulacao;
+    }
+
+    public TarefaRepository(String nome, String status, DateManipulacaoDomain dateManipulacao, Date dtTermino) {
         this.nome = nome;
         this.status = status;
         this.descricao = null;
         this.dtTermino = dtTermino;
         this.prioridade = 1;
-        this.categorias = null;
+        this.categorias = new ArrayList<>();
         this.dateManipulacao = dateManipulacao;
     }
 
@@ -44,7 +64,7 @@ public class TarefaRepository implements TarefaDomain {
             String descricao,
             Date dtTermino,
             Integer prioridade,
-            StatusDomain status,
+            String status,
             DateManipulacaoDomain dateManipulacao
     ) {
         this.nome = nome;
@@ -56,6 +76,13 @@ public class TarefaRepository implements TarefaDomain {
         this.dateManipulacao = dateManipulacao;
     }
 
+    public void adicionarCategoria(CategoriaDomain categoria) {
+        categorias.add(categoria);
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
     public String getNome() {
         return nome;
     }
@@ -91,11 +118,11 @@ public class TarefaRepository implements TarefaDomain {
         this.categorias = categorias;
     }
 
-    public StatusDomain getStatus() {
+    public String getStatus() {
         return status;
     }
 
-    public void setStatus(StatusDomain status) {
+    public void setStatus(String status) {
         this.status = status;
     }
 

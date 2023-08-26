@@ -16,12 +16,10 @@ public class SetTarefaRepository implements SetTarefaDomain {
 
     @Override
     public void adicionarTarefa(TarefaDomain tarefa) {
-        if (!containsNome(tarefa.getNome())) {
-            tarefas.add(tarefa);
-        }
+        tarefas.add(tarefa);
     }
 
-    private boolean containsNome(String nome) {
+    public boolean contemTarefaPorNome(String nome) {
         return tarefas.stream().anyMatch(tarefa -> tarefa.getNome().equals(nome));
     }
 
@@ -44,33 +42,13 @@ public class SetTarefaRepository implements SetTarefaDomain {
     }
 
     @Override
-    public void atualizarTarefa(TarefaDomain tarefaAtualizada) {
-        TarefaDomain tarefaExistente = buscarTarefaPorNome(tarefaAtualizada.getNome());
-
-        if (tarefaExistente != null) {
-            if (tarefaAtualizada.getDescricao() == null) {
-                tarefaAtualizada.setDescricao(tarefaExistente.getDescricao());
-            }
-            if (tarefaAtualizada.getPrioridade() == null) {
-                tarefaAtualizada.setPrioridade(tarefaExistente.getPrioridade());
-            }
-            if (tarefaAtualizada.getStatus() == null) {
-                tarefaAtualizada.setStatus(tarefaExistente.getStatus());
-            }
-            if (tarefaAtualizada.getCategorias() == null) {
-                tarefaAtualizada.setCategorias(tarefaExistente.getCategorias());
-            }
-            if (tarefaAtualizada.getDtTermino() == null) {
-                tarefaAtualizada.setDtTermino(tarefaExistente.getDtTermino());
-            }
-            tarefas.remove(tarefaExistente);
-            tarefas.add(tarefaAtualizada);
-        } else {
-            System.out.println("Tarefa não encontrada.");
-        }
+    public void atualizarTarefa(String nomeAntigo, TarefaDomain tarefaAtualizada) {
+        TarefaDomain tarefaExistente = buscarTarefaPorNome(nomeAntigo);
+        tarefas.remove(tarefaExistente);
+        tarefas.add(tarefaAtualizada);
     }
 
-    private TarefaDomain buscarTarefaPorNome(String nome) {
+    public TarefaDomain buscarTarefaPorNome(String nome) {
         return tarefas.stream()
                 .filter(tarefa -> tarefa.getNome().equals(nome))
                 .findFirst()
