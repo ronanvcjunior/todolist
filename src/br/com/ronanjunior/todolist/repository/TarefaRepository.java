@@ -4,10 +4,8 @@ import br.com.ronanjunior.todolist.domain.CategoriaDomain;
 import br.com.ronanjunior.todolist.domain.DateManipulacaoDomain;
 import br.com.ronanjunior.todolist.domain.TarefaDomain;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.text.ParseException;
+import java.util.*;
 
 public class TarefaRepository implements TarefaDomain {
     private String nome;
@@ -18,6 +16,38 @@ public class TarefaRepository implements TarefaDomain {
     private String status;
 
     private DateManipulacaoDomain dateManipulacao;
+
+    public TarefaRepository(List<String> sTarefa, DateManipulacaoDomain dateManipulacao) {
+        this.nome = sTarefa.get(0);
+
+        if (sTarefa.get(1).equals("null")) {
+            this.descricao = null;
+        } else {
+            this.descricao = sTarefa.get(1);
+        }
+
+        try {
+            this.dtTermino = dateManipulacao.converterStringParaDate(sTarefa.get(2), "dd/MM/yyyy");
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+
+        this.prioridade = Integer.parseInt(sTarefa.get(3));
+
+        if (sTarefa.get(4).equals("null")) {
+            this.categorias = new ArrayList<>();
+        } else {
+            this.categorias = new ArrayList<>();
+            String[] sCategorias = sTarefa.get(4).split("-");
+            for (String sCategoria : sCategorias) {
+                this.categorias.add(new CategoriasRepository(sCategoria));
+            }
+        }
+
+        this.status = sTarefa.get(5);
+
+        this.dateManipulacao = dateManipulacao;
+    }
 
     public TarefaRepository(DateManipulacaoDomain dateManipulacao) {
         this.nome = null;
@@ -78,6 +108,31 @@ public class TarefaRepository implements TarefaDomain {
 
     public void adicionarCategoria(CategoriaDomain categoria) {
         categorias.add(categoria);
+    }
+
+    public List<String> converterTarefaParaListaString() {
+        List<String> sTarefas = new ArrayList<>();
+        sTarefas.add(this.nome);
+        sTarefas.add(this.descricao);
+        sTarefas.add(dateManipulacao.converterDateParaString(this.dtTermino, "dd/MM/yyyy"));
+        sTarefas.add(this.prioridade.toString());
+
+        int numeroCategorias = categorias.size();
+        if (numeroCategorias > 0) {
+            String sCategorias = "";
+            for (int i = 0; i < numeroCategorias; i++) {
+                sCategorias = sCategorias.concat(categorias.get(i).getNome());
+                if (i < (numeroCategorias-1)) {
+                    sCategorias = sCategorias.concat("-");
+                }
+            }
+            sTarefas.add(sCategorias);
+        } else {
+            sTarefas.add(null);
+        }
+        sTarefas.add(this.status);
+
+        return sTarefas;
     }
 
     public void setNome(String nome) {

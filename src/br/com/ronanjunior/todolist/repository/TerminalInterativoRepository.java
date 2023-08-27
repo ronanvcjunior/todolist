@@ -3,6 +3,7 @@ package br.com.ronanjunior.todolist.repository;
 import br.com.ronanjunior.todolist.domain.*;
 
 import java.text.ParseException;
+import java.util.concurrent.*;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -14,7 +15,8 @@ public class TerminalInterativoRepository implements TerminalInterativoDomain {
     private final DateManipulacaoDomain dateManipulacao = new DateManipulacaoRepository();
     private final TreeSet<TarefaDomain> setPrioridade = new TreeSet<>(Comparator.comparing(TarefaDomain::getPrioridade).reversed().thenComparing(Comparator.comparing(TarefaDomain::getNome)));
     private final TreeSet<TarefaDomain> setDtTermino = new TreeSet<>(Comparator.comparing(TarefaDomain::getDtTermino).thenComparing(Comparator.comparing(TarefaDomain::getNome)));
-    private List<CategoriaDomain> categorias = new ArrayList<>();
+    private final List<CategoriaDomain> categorias = new ArrayList<>();
+    final static ManipulacaoArquivoDomain manipulacaoArquivo = new ManipulacaoArquivoRepository();
     private final Comparator<TarefaDomain> statusComparator = Comparator.comparing(tarefa -> {
         String status = tarefa.getStatus();
         if (status.equals("ToDo")) {
@@ -36,6 +38,7 @@ public class TerminalInterativoRepository implements TerminalInterativoDomain {
 
     @Override
     public void runTerminalInterativo() {
+        manipulacaoArquivo.carregarDiretorioTodolist(tarefas, categorias);
         System.out.println("Digite um comando ('help' para ajuda, 'exit' para sair): ");
 
         while (running) {
@@ -49,7 +52,7 @@ public class TerminalInterativoRepository implements TerminalInterativoDomain {
                     break;
                 case "add":
                     if (comandos.size() == 3) {
-                        adicionarTarefa(comandos.get(1), comandos.get(2));
+                        validarAdicionarTarefa(comandos.get(1), comandos.get(2));
                     } else {
                         System.out.println("Comando 'add' incorreto");
                         System.out.println(" - add <nome> <dataTermino>: adiciona uma nova tarefa");
@@ -152,7 +155,8 @@ public class TerminalInterativoRepository implements TerminalInterativoDomain {
                                     System.out.println("                  -s <status>: para alterar o status da tarefa para as opções (ToDo, Doing e Done)");
                                     break label;
                             }
-                            tarefas.atualizarTarefa(comandos.get(1), tarefaAtualizada);
+
+                            atualizarTarefa(comandos.get(1), tarefaAtualizada);
                         } else {
                             System.out.printf("A tarefa com nome %s não existe na lista de tarefas\n", comandos.get(1));
                         }
@@ -169,7 +173,7 @@ public class TerminalInterativoRepository implements TerminalInterativoDomain {
                     break;
                 case "delete":
                     if (comandos.size() == 2) {
-                        removerTarefa(comandos.get(1));
+                        validatDeletarTarefa(comandos.get(1));
                     } else {
                         System.out.println("Comando 'delete' incorreto");
                         System.out.println(" - delete <nome>: para deletar uma tarefa da lista");
@@ -184,7 +188,7 @@ public class TerminalInterativoRepository implements TerminalInterativoDomain {
                         } else {
                             CategoriaDomain categoria = new CategoriasRepository(comandos.get(1));
                             if (!categorias.contains(categoria)) {
-                                categorias.add(categoria);
+                                adicionarCategoria(categoria);
                             } else {
                                 System.out.println("Já possui uma categoria com o mesmo nome");
                             }
@@ -237,13 +241,13 @@ public class TerminalInterativoRepository implements TerminalInterativoDomain {
         return comandos;
     }
 
-    private void adicionarTarefa(String nome, String dtTermino) {
+    private void validarAdicionarTarefa(String nome, String dtTermino) {
         TarefaDomain tarefa;
         try {
             Date dataTermino = dateManipulacao.converterStringParaDate(dtTermino, "dd/MM/yyyy");
             tarefa = new TarefaRepository(nome, dataTermino, dateManipulacao);
             if (!tarefas.contemTarefaPorNome(tarefa.getNome())) {
-                tarefas.adicionarTarefa(tarefa);
+                adicionarTarefa(tarefa);
             } else {
                 System.out.println("Já possui uma tarefa com o mesmo nome");
             }
@@ -252,15 +256,113 @@ public class TerminalInterativoRepository implements TerminalInterativoDomain {
         }
     }
 
-    private void removerTarefa(String nome) {
+    private void validatDeletarTarefa(String nome) {
         if (tarefas.contemTarefaPorNome(nome)) {
             TarefaDomain tarefaRemover = tarefas.buscarTarefaPorNome(nome);
-            tarefas.removerTarefa(tarefaRemover);
+            deletarTarefa(tarefaRemover);
         } else {
             System.out.printf("A tarefa com nome %s não existe na lista de tarefas\n", nome);
         }
     }
 
+    private void adicionarTarefa(TarefaDomain tarefa) {
+        ScheduledExecutorService executorService = Executors.newScheduledThreadPool(2);
+
+        Thread adicionarTarefaLista = new Thread(() -> {
+            tarefas.adicionarTarefa(tarefa);
+        });
+
+        Thread adicionarTarefaArquivo = new Thread(() -> {
+            List<String> tarefaString = tarefa.converterTarefaParaListaString();
+            manipulacaoArquivo.escreverNoFimDoArquivo("tarefas.csv", ".todolist", tarefaString);
+        });
+
+        adicionarTarefaLista.start();
+        adicionarTarefaArquivo.start();
+
+        try {
+            adicionarTarefaLista.join();
+            adicionarTarefaArquivo.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        executorService.shutdown();
+    }
+
+    private void deletarTarefa(TarefaDomain tarefa) {
+        ScheduledExecutorService executorService = Executors.newScheduledThreadPool(2);
+
+        Thread adicionarTarefaLista = new Thread(() -> {
+            tarefas.removerTarefa(tarefa);
+        });
+
+        Thread adicionarTarefaArquivo = new Thread(() -> {
+            manipulacaoArquivo.excluirLinhaEspecifica("tarefas.csv", ".todolist", tarefa.getNome());
+        });
+
+        adicionarTarefaLista.start();
+        adicionarTarefaArquivo.start();
+
+        try {
+            adicionarTarefaLista.join();
+            adicionarTarefaArquivo.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        executorService.shutdown();
+    }
+
+    private void atualizarTarefa(String nomeAntigo, TarefaDomain tarefa) {
+        ScheduledExecutorService executorService = Executors.newScheduledThreadPool(2);
+
+        Thread adicionarTarefaLista = new Thread(() -> {
+            tarefas.atualizarTarefa(nomeAntigo, tarefa);
+        });
+
+        Thread adicionarTarefaArquivo = new Thread(() -> {
+            List<String> tarefaString = tarefa.converterTarefaParaListaString();
+            manipulacaoArquivo.escreverEmLinhaEspecifica("tarefas.csv", ".todolist", nomeAntigo, tarefaString);
+        });
+
+        adicionarTarefaLista.start();
+        adicionarTarefaArquivo.start();
+
+        try {
+            adicionarTarefaLista.join();
+            adicionarTarefaArquivo.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        executorService.shutdown();
+    }
+
+    private void adicionarCategoria(CategoriaDomain categoria) {
+        ScheduledExecutorService executorService = Executors.newScheduledThreadPool(2);
+
+        Thread adicionarCategoriaLista = new Thread(() -> {
+            categorias.add(categoria);
+        });
+
+        Thread adicionarCategoriaArquivo = new Thread(() -> {
+            List<String> categoriaString = Collections.singletonList(categoria.getNome());
+            manipulacaoArquivo.escreverNoFimDoArquivo("categorias.csv", ".todolist", categoriaString);
+        });
+
+        adicionarCategoriaLista.start();
+        adicionarCategoriaArquivo.start();
+
+        try {
+            adicionarCategoriaLista.join();
+            adicionarCategoriaArquivo.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        executorService.shutdown();
+    }
 
     private void displayHelp() {
         System.out.println("Opções disponíveis:");

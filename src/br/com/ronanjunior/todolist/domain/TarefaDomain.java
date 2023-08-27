@@ -5,6 +5,7 @@ import java.util.List;
 
 public interface TarefaDomain {
     void adicionarCategoria(CategoriaDomain categoria);
+    List<String> converterTarefaParaListaString();
     void setNome(String nome);
     String getNome();
     String getDescricao();

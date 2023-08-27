@@ -1,6 +1,8 @@
 package br.com.ronanjunior.todolist.domain;
 
-public interface CategoriaDomain {
+import java.util.List;
 
+public interface CategoriaDomain {
+    String getNome();
 
 }
