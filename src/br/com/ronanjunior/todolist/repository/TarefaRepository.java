@@ -196,13 +196,11 @@ public class TarefaRepository implements TarefaDomain {
 
     @Override
     public String toString() {
-        return "TarefaRepository{" +
-                "nome='" + nome + '\'' +
-                ", descricao='" + descricao + '\'' +
+        return "nome=" + nome +
+                ", descricao=" + descricao +
                 ", dtTermino=" + dateManipulacao.converterDateParaString(dtTermino, "dd/MM/yyyy") +
                 ", prioridade=" + prioridade +
                 ", categorias=" + categorias +
-                ", status=" + status +
-                '}';
+                ", status=" + status;
     }
 }

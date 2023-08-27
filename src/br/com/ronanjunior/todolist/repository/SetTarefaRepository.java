@@ -32,7 +32,7 @@ public class SetTarefaRepository implements SetTarefaDomain {
     public void listar(Set<TarefaDomain> set) {
         ordenar(set);
         for (TarefaDomain tarefa : tarefas) {
-            System.out.println(tarefa);
+            System.out.println("\t" + tarefa);
         }
     }
 
@@ -57,8 +57,6 @@ public class SetTarefaRepository implements SetTarefaDomain {
 
     @Override
     public String toString() {
-        return "SetTarefaRepository{" +
-                "tarefas=" + tarefas +
-                '}';
+        return "(" + tarefas + ")";
     }
 }

@@ -183,7 +183,7 @@ public class TerminalInterativoRepository implements TerminalInterativoDomain {
                     if (comandos.size() == 2) {
                         if (comandos.get(1).equals("list")) {
                             for (CategoriaDomain categoria : categorias) {
-                                System.out.println(categoria);
+                                System.out.println("\t" + categoria);
                             }
                         } else {
                             CategoriaDomain categoria = new CategoriasRepository(comandos.get(1));
@@ -201,9 +201,9 @@ public class TerminalInterativoRepository implements TerminalInterativoDomain {
                     break;
                 case "status":
                     if (comandos.get(1).equals("list")) {
-                        System.out.println("ToDo");
-                        System.out.println("Doing");
-                        System.out.println("Done");
+                        System.out.println("\tToDo");
+                        System.out.println("\tDoing");
+                        System.out.println("\tDone");
                     } else {
                         System.out.println("Comando 'status list' incorreto");
                         System.out.println(" - status list: para mostrar a lista de status");
@@ -383,5 +383,8 @@ public class TerminalInterativoRepository implements TerminalInterativoDomain {
         System.out.println(" - categoria <categoria>: para criar uma nova categoria");
         System.out.println(" - categoria list: para mostrar a lista de categorias");
         System.out.println(" - exit: Sai do programa");
+        System.out.println("Observações:");
+        System.out.println(" - palavras compostas entre aspas (\"\")");
+        System.out.println(" - formato da data (dd/MM/yyyy)");
     }
 }

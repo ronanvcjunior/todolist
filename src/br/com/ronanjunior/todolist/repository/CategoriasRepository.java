@@ -30,8 +30,6 @@ public class CategoriasRepository implements CategoriaDomain {
 
     @Override
     public String toString() {
-        return "CategoriasRepository{" +
-                "nome='" + nome + '\'' +
-                '}';
+        return nome;
     }
 }
