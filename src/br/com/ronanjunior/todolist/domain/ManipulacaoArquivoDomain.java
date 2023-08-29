@@ -10,6 +10,4 @@ public interface ManipulacaoArquivoDomain {
     void escreverNoFimDoArquivo(String nomeArquivo, String complementoPath, List<String> linha);
     void escreverEmLinhaEspecifica(String nomeArquivo, String complementoPath, String filtroPrimeiraPalavra, List<String> novaLinha);
     void excluirLinhaEspecifica(String nomeArquivo, String complementoPath, String filtroPrimeiraPalavra);
-    String getPath();
-    void setPath(String path);
 }

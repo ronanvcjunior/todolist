@@ -3,9 +3,7 @@ package br.com.ronanjunior.todolist.repository;
 import br.com.ronanjunior.todolist.domain.SetTarefaDomain;
 import br.com.ronanjunior.todolist.domain.TarefaDomain;
 
-import java.util.Comparator;
 import java.util.Set;
-import java.util.TreeSet;
 
 public class SetTarefaRepository implements SetTarefaDomain {
     private Set<TarefaDomain> tarefas;

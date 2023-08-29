@@ -8,10 +8,10 @@ import br.com.ronanjunior.todolist.domain.TarefaDomain;
 import java.util.Collections;
 import java.util.concurrent.*;
 import java.io.*;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ManipulacaoArquivoRepository implements ManipulacaoArquivoDomain {
     private String path;
@@ -20,6 +20,7 @@ public class ManipulacaoArquivoRepository implements ManipulacaoArquivoDomain {
         this.path = System.getProperty("user.dir");
     }
 
+    @Override
     public void carregarDiretorioTodolist(SetTarefaDomain tarefas, List<CategoriaDomain> categorias) {
         if (!verificarExistenciaArquivo("tarefas.csv", ".todolist") || !verificarExistenciaArquivo("categorias.csv", ".todolist")) {
             montarToDoList(".todolist");
@@ -41,14 +42,14 @@ public class ManipulacaoArquivoRepository implements ManipulacaoArquivoDomain {
         Thread criarArquivoTarefasThread = new Thread(() -> {
             criarArquivo("tarefas.csv", complementoPath);
             if (arquivoEstaVazio("tarefas.csv", complementoPath)) {
-                escreverNoFimDoArquivo("tarefas.csv", complementoPath, Arrays.asList("Nome", "Descrição", "Data de Término", "Prioridade", "Categorias", "Status")); // Substitua pelos cabeçalhos desejados
+                escreverNoFimDoArquivo("tarefas.csv", complementoPath, Arrays.asList("Nome", "Descrição", "Data de Término", "Prioridade", "Categorias", "Status"));
             }
         });
 
         Thread criarArquivoCategoriasThread = new Thread(() -> {
             criarArquivo("categorias.csv", complementoPath);
             if (arquivoEstaVazio("categorias.csv", complementoPath)) {
-                escreverNoFimDoArquivo("categorias.csv", complementoPath, Collections.singletonList("Nome")); // Substitua pelos cabeçalhos desejados
+                escreverNoFimDoArquivo("categorias.csv", complementoPath, Collections.singletonList("Nome"));
             }
         });
 
@@ -86,10 +87,7 @@ public class ManipulacaoArquivoRepository implements ManipulacaoArquivoDomain {
 
         Thread lerArquivoCategoriasThread = new Thread(() -> {
             List<List<String>> categoriasStringList = lerArquivo("categorias.csv", ".todolist");
-            for (List<String> categoriasString : categoriasStringList) {
-                CategoriaDomain categoria = new CategoriasRepository(categoriasString.get(0));
-                categorias.add(categoria);
-            }
+            categorias.addAll(categoriasStringList.stream().map(strings -> new CategoriasRepository(strings.get(0))).collect(Collectors.toList()));
         });
 
         lerArquivoTarefasThread.start();
@@ -108,11 +106,11 @@ public class ManipulacaoArquivoRepository implements ManipulacaoArquivoDomain {
         System.out.println(" concluído.");
     }
 
-
     private boolean arquivoEstaVazio(String nomeArquivo, String complementoPath) {
         File arquivo = new File(path + "/" + complementoPath, nomeArquivo);
         return arquivo.length() == 0;
     }
+
     private void criarDiretorio(String nomeDiretorio) {
         new File(path, nomeDiretorio).mkdirs();
     }
@@ -126,26 +124,29 @@ public class ManipulacaoArquivoRepository implements ManipulacaoArquivoDomain {
         }
     }
 
+    @Override
     public boolean verificarExistenciaDiretorio(String nomeDiretorio) {
         File diretorio = new File(path, nomeDiretorio);
         return diretorio.exists() && diretorio.isDirectory();
     }
 
+    @Override
     public boolean verificarExistenciaArquivo(String nomeArquivo, String complementoPath) {
         File arquivo = new File(path + "/" + complementoPath, nomeArquivo);
         return arquivo.exists() && arquivo.isFile();
     }
 
+    @Override
     public List<List<String>> lerArquivo(String nomeArquivo, String complementoPath) {
         List<List<String>> lines = new ArrayList<>();
         File arquivo = new File(path + "/" + complementoPath, nomeArquivo);
         try (BufferedReader reader = new BufferedReader(new FileReader(arquivo))) {
             String line;
-            boolean primeiraLinha = true;  // Adicione essa flag
+            boolean primeiraLinha = true;
             while ((line = reader.readLine()) != null) {
                 if (primeiraLinha) {
                     primeiraLinha = false;
-                    continue;  // Pular a primeira linha
+                    continue;
                 }
                 List<String> columns = Arrays.asList(line.split(","));
                 lines.add(columns);
@@ -156,7 +157,7 @@ public class ManipulacaoArquivoRepository implements ManipulacaoArquivoDomain {
         return lines;
     }
 
-
+    @Override
     public void escreverNoFimDoArquivo(String nomeArquivo, String complementoPath, List<String> linha) {
         File arquivo = new File(path + "/" + complementoPath, nomeArquivo);
         String linhaCSV = String.join(",", linha);
@@ -168,6 +169,7 @@ public class ManipulacaoArquivoRepository implements ManipulacaoArquivoDomain {
         }
     }
 
+    @Override
     public void escreverEmLinhaEspecifica(String nomeArquivo, String complementoPath, String filtroPrimeiraPalavra, List<String> novaLinha) {
         File arquivo = new File(path + "/" + complementoPath, nomeArquivo);
         List<String> lines = new ArrayList<>();
@@ -196,6 +198,7 @@ public class ManipulacaoArquivoRepository implements ManipulacaoArquivoDomain {
         }
     }
 
+    @Override
     public void excluirLinhaEspecifica(String nomeArquivo, String complementoPath, String filtroPrimeiraPalavra) {
         File arquivo = new File(path + "/" + complementoPath, nomeArquivo);
         List<String> lines = new ArrayList<>();
@@ -204,8 +207,7 @@ public class ManipulacaoArquivoRepository implements ManipulacaoArquivoDomain {
             String line;
             while ((line = reader.readLine()) != null) {
                 String palavraNaLinha = line.substring(0, line.indexOf(','));
-                if (palavraNaLinha.equals(filtroPrimeiraPalavra)) {
-                } else {
+                if (!palavraNaLinha.equals(filtroPrimeiraPalavra)) {
                     lines.add(line);
                 }
             }
@@ -222,12 +224,4 @@ public class ManipulacaoArquivoRepository implements ManipulacaoArquivoDomain {
             e.printStackTrace();
         }
     }
-    public String getPath() {
-        return path;
-    }
-
-    public void setPath(String path) {
-        this.path = path;
-    }
-
 }

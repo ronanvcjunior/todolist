@@ -1,6 +1,5 @@
 package br.com.ronanjunior.todolist.domain;
 
-import java.util.Locale;
 import java.util.Set;
 
 public interface SetTarefaDomain {

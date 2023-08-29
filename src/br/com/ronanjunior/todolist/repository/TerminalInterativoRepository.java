@@ -60,25 +60,7 @@ public class TerminalInterativoRepository implements TerminalInterativoDomain {
                     break;
                 case "tarefa":
                     if (comandos.size() > 1 && comandos.get(1).equals("list")) {
-                        if (comandos.size() == 2) {
-                            tarefas.listar(setPrioridade);
-                        } else if (comandos.size() == 3) {
-                            if (comandos.get(2).equals("-s")) {
-                                tarefas.listar(setStatus);
-                            } else if (comandos.get(2).equals("-t")) {
-                                tarefas.listar(setDtTermino);
-                            } else {
-                                System.out.println("Comando 'tarefa list' incorreto");
-                                System.out.println(" - tarefa list: para mostrar a lista de tarefas (ordenação padrão por prioridade), segue as opções:");
-                                System.out.println("                -t: para mostrar a lista de tarefas por data de termino da tarefa");
-                                System.out.println("                -s: para mostrar a lista de tarefas por status da tarefa");
-                            }
-                        } else {
-                            System.out.println("Comando 'tarefa list' incorreto");
-                            System.out.println(" - tarefa list: para mostrar a lista de tarefas (ordenação padrão por prioridade), segue as opções:");
-                            System.out.println("                -t: para mostrar a lista de tarefas por data de termino da tarefa");
-                            System.out.println("                -s: para mostrar a lista de tarefas por status da tarefa");
-                        }
+                        validarListarTarefas(comandos);
                     } else {
                         System.out.println("Comando 'tarefa list' incorreto");
                         System.out.println(" - tarefa list: para mostrar a lista de tarefas (ordenação padrão por prioridade), segue as opções:");
@@ -87,79 +69,8 @@ public class TerminalInterativoRepository implements TerminalInterativoDomain {
                     }
                     break;
                 case "update":
-                    if (comandos.size() == 4) {
-                        if (tarefas.contemTarefaPorNome(comandos.get(1))) {
-                            TarefaDomain tarefaAntiga = tarefas.buscarTarefaPorNome(comandos.get(1));
-                            TarefaDomain tarefaAtualizada = new TarefaRepository(dateManipulacao);
-                            tarefaAtualizada.setNome(tarefaAntiga.getNome());
-                            tarefaAtualizada.setDescricao(tarefaAntiga.getDescricao());
-                            tarefaAtualizada.setStatus(tarefaAntiga.getStatus());
-                            tarefaAtualizada.setDtTermino(tarefaAntiga.getDtTermino());
-                            tarefaAtualizada.setPrioridade(tarefaAntiga.getPrioridade());
-                            tarefaAtualizada.setCategorias(tarefaAntiga.getCategorias());
-                            switch (comandos.get(2)) {
-                                case "-n":
-                                    tarefaAtualizada.setNome(comandos.get(3));
-                                    break;
-                                case "-d":
-                                    tarefaAtualizada.setDescricao(comandos.get(3));
-                                    break;
-                                case "-t":
-                                    try {
-                                        Date dataTermino = dateManipulacao.converterStringParaDate(comandos.get(3), "dd/MM/yyyy");
-                                        tarefaAtualizada.setDtTermino(dataTermino);
-                                    } catch (ParseException e) {
-                                        System.out.println("O formato da data de termino deve ser dd/MM/yyyy");
-                                        break;
-                                    }
-                                    break;
-                                case "-p":
-                                    try {
-                                        int prioridade = Integer.parseInt(comandos.get(3));
-                                        if (prioridade >= 1 && prioridade <= 5) {
-                                            tarefaAtualizada.setPrioridade(prioridade);
-                                        } else {
-                                            System.out.println("Número inválido para prioridade, precisa ser um valor entre 1 até 5");
-                                            break;
-                                        }
-                                    } catch (NumberFormatException e) {
-                                        System.out.println("Número inválido para prioridade, precisa ser um valor entre 1 até 5");
-                                        break;
-                                    }
-                                    break;
-                                case "-c":
-                                    CategoriaDomain categoria = new CategoriasRepository(comandos.get(3));
-                                    if (categorias.contains(categoria)) {
-                                        tarefaAtualizada.adicionarCategoria(categoria);
-                                    } else {
-                                        System.out.println("Categoria não existe");
-                                        break label;
-                                    }
-                                    break;
-                                case "-s":
-                                    if (comandos.get(3).equals("ToDo") || comandos.get(3).equals("Doing") || comandos.get(3).equals("Done")) {
-                                        tarefaAtualizada.setStatus(comandos.get(3));
-                                    } else {
-                                        System.out.println("Status invalido, segue as opões (ToDo, Doing e Done)");
-                                        break label;
-                                    }
-                                    break;
-                                default:
-                                    System.out.println("Comando 'update' incorreto");
-                                    System.out.println(" - update <nome>: para fazer update em uma determinada tarefa, segue as opções:");
-                                    System.out.println("                  -n <novoNome>: para renomear a tarefa");
-                                    System.out.println("                  -d <descricao>: para alterar a descrição da tarefa");
-                                    System.out.println("                  -t <dataTermino>: para alterar a data de termino da tarefa");
-                                    System.out.println("                  -p <prioridade>: para alterar a prioridade da tarefa (valores de 1 até 5)");
-                                    System.out.println("                  -c <categoria>: para adicionar uma categoria para a tarefa");
-                                    System.out.println("                  -s <status>: para alterar o status da tarefa para as opções (ToDo, Doing e Done)");
-                                    break label;
-                            }
-
-                            atualizarTarefa(comandos.get(1), tarefaAtualizada);
-                        } else {
-                            System.out.printf("A tarefa com nome %s não existe na lista de tarefas\n", comandos.get(1));
-                        }
+                    if (comandos.size() >= 3) {
+                        validarAtualizarTarefa(comandos);
                     } else {
                         System.out.println("Comando 'update' incorreto");
                         System.out.println(" - update <nome>: para fazer update em uma determinada tarefa, segue as opções:");
@@ -173,26 +84,15 @@ public class TerminalInterativoRepository implements TerminalInterativoDomain {
                     break;
                 case "delete":
                     if (comandos.size() == 2) {
-                        validatDeletarTarefa(comandos.get(1));
+                        validarDeletarTarefa(comandos.get(1));
                     } else {
                         System.out.println("Comando 'delete' incorreto");
                         System.out.println(" - delete <nome>: para deletar uma tarefa da lista");
                     }
                     break;
                 case "categoria":
-                    if (comandos.size() == 2) {
-                        if (comandos.get(1).equals("list")) {
-                            for (CategoriaDomain categoria : categorias) {
-                                System.out.println("\t" + categoria);
-                            }
-                        } else {
-                            CategoriaDomain categoria = new CategoriasRepository(comandos.get(1));
-                            if (!categorias.contains(categoria)) {
-                                adicionarCategoria(categoria);
-                            } else {
-                                System.out.println("Já possui uma categoria com o mesmo nome");
-                            }
-                        }
+                    if (comandos.size() >= 2) {
+                        validarCategoria(comandos);
                     } else {
                         System.out.println("Comando 'categoria' incorreto");
                         System.out.println(" - categoria <categoria>: para criar uma nova categoria");
@@ -200,7 +100,7 @@ public class TerminalInterativoRepository implements TerminalInterativoDomain {
                     }
                     break;
                 case "status":
-                    if (comandos.get(1).equals("list")) {
+                    if (comandos.size() == 2 && comandos.get(1).equals("list")) {
                         System.out.println("\tToDo");
                         System.out.println("\tDoing");
                         System.out.println("\tDone");
@@ -255,6 +155,29 @@ public class TerminalInterativoRepository implements TerminalInterativoDomain {
             System.out.println("O formato da data de termino deve ser dd/MM/yyyy");
         }
     }
+
+    private void validarListarTarefas(List<String> comandos) {
+        if (comandos.size() == 2) {
+            tarefas.listar(setPrioridade);
+        } else if (comandos.size() == 3) {
+            if (comandos.get(2).equals("-s")) {
+                tarefas.listar(setStatus);
+            } else if (comandos.get(2).equals("-t")) {
+                tarefas.listar(setDtTermino);
+            } else {
+                System.out.println("Comando 'tarefa list' incorreto");
+                System.out.println(" - tarefa list: para mostrar a lista de tarefas (ordenação padrão por prioridade), segue as opções:");
+                System.out.println("                -t: para mostrar a lista de tarefas por data de termino da tarefa");
+                System.out.println("                -s: para mostrar a lista de tarefas por status da tarefa");
+            }
+        } else {
+            System.out.println("Comando 'tarefa list' incorreto");
+            System.out.println(" - tarefa list: para mostrar a lista de tarefas (ordenação padrão por prioridade), segue as opções:");
+            System.out.println("                -t: para mostrar a lista de tarefas por data de termino da tarefa");
+            System.out.println("                -s: para mostrar a lista de tarefas por status da tarefa");
+        }
+    }
+
 
     private void validatDeletarTarefa(String nome) {
         if (tarefas.contemTarefaPorNome(nome)) {
@@ -314,6 +237,89 @@ public class TerminalInterativoRepository implements TerminalInterativoDomain {
         executorService.shutdown();
     }
 
+    private void validarAtualizarTarefa(List<String> comandos) {
+        if (tarefas.contemTarefaPorNome(comandos.get(1))) {
+            TarefaDomain tarefaAntiga = tarefas.buscarTarefaPorNome(comandos.get(1));
+            TarefaDomain tarefaAtualizada = criarCopiaTarefa(tarefaAntiga);
+
+            switch (comandos.get(2)) {
+                case "-n":
+                    tarefaAtualizada.setNome(comandos.get(3));
+                    break;
+                case "-d":
+                    tarefaAtualizada.setDescricao(comandos.get(3));
+                    break;
+                case "-t":
+                    validarAtualizarDataTermino(tarefaAtualizada, comandos.get(3));
+                    break;
+                case "-p":
+                    validarAtualizarPrioridade(tarefaAtualizada, comandos.get(3));
+                    break;
+                case "-c":
+                    validarAdicionarCategoria(tarefaAtualizada, comandos.get(3));
+                    break;
+                case "-s":
+                    tarefaAtualizada.setStatus(comandos.get(3));
+                    break;
+                default:
+                    System.out.println("Comando 'update' incorreto");
+                    System.out.println(" - update <nome>: para fazer update em uma determinada tarefa, segue as opções:");
+                    System.out.println("                  -n <novoNome>: para renomear a tarefa");
+                    System.out.println("                  -d <descricao>: para alterar a descrição da tarefa");
+                    System.out.println("                  -t <dataTermino>: para alterar a data de termino da tarefa");
+                    System.out.println("                  -p <prioridade>: para alterar a prioridade da tarefa (valores de 1 até 5)");
+                    System.out.println("                  -c <categoria>: para adicionar uma categoria para a tarefa");
+                    System.out.println("                  -s <status>: para alterar o status da tarefa para as opções (ToDo, Doing e Done)");
+                    break;
+            }
+
+            atualizarTarefa(comandos.get(1), tarefaAtualizada);
+        } else {
+            System.out.printf("A tarefa com nome %s não existe na lista de tarefas\n", comandos.get(1));
+        }
+    }
+
+    private TarefaDomain criarCopiaTarefa(TarefaDomain tarefa) {
+        TarefaDomain copia = new TarefaRepository(dateManipulacao);
+        copia.setNome(tarefa.getNome());
+        copia.setDescricao(tarefa.getDescricao());
+        copia.setStatus(tarefa.getStatus());
+        copia.setDtTermino(tarefa.getDtTermino());
+        copia.setPrioridade(tarefa.getPrioridade());
+        copia.setCategorias(tarefa.getCategorias());
+        return copia;
+    }
+
+    private void validarAtualizarDataTermino(TarefaDomain tarefa, String dataTermino) {
+        try {
+            Date novaDataTermino = dateManipulacao.converterStringParaDate(dataTermino, "dd/MM/yyyy");
+            tarefa.setDtTermino(novaDataTermino);
+        } catch (ParseException e) {
+            System.out.println("O formato da data de termino deve ser dd/MM/yyyy");
+        }
+    }
+
+    private void validarAtualizarPrioridade(TarefaDomain tarefa, String prioridadeStr) {
+        try {
+            int prioridade = Integer.parseInt(prioridadeStr);
+            if (prioridade >= 1 && prioridade <= 5) {
+                tarefa.setPrioridade(prioridade);
+            } else {
+                System.out.println("Número inválido para prioridade, precisa ser um valor entre 1 até 5");
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Número inválido para prioridade, precisa ser um valor entre 1 até 5");
+        }
+    }
+    private void validarAdicionarCategoria(TarefaDomain tarefa, String nomeCategoria) {
+        CategoriaDomain categoria = new CategoriasRepository(nomeCategoria);
+        if (categorias.contains(categoria)) {
+            tarefa.adicionarCategoria(categoria);
+        } else {
+            System.out.println("Categoria não existe");
+        }
+    }
+
     private void atualizarTarefa(String nomeAntigo, TarefaDomain tarefa) {
         ScheduledExecutorService executorService = Executors.newScheduledThreadPool(2);
 
@@ -337,6 +343,30 @@ public class TerminalInterativoRepository implements TerminalInterativoDomain {
         }
 
         executorService.shutdown();
+    }
+
+    private void validarDeletarTarefa(String nome) {
+        if (tarefas.contemTarefaPorNome(nome)) {
+            TarefaDomain tarefaRemover = tarefas.buscarTarefaPorNome(nome);
+            deletarTarefa(tarefaRemover);
+        } else {
+            System.out.printf("A tarefa com nome %s não existe na lista de tarefas\n", nome);
+        }
+    }
+
+    private void validarCategoria(List<String> comandos) {
+        if (comandos.get(1).equals("list")) {
+            for (CategoriaDomain categoria : categorias) {
+                System.out.println("\t" + categoria);
+            }
+        } else {
+            CategoriaDomain categoria = new CategoriasRepository(comandos.get(1));
+            if (!categorias.contains(categoria)) {
+                adicionarCategoria(categoria);
+            } else {
+                System.out.println("Já possui uma categoria com o mesmo nome");
+            }
+        }
     }
 
     private void adicionarCategoria(CategoriaDomain categoria) {
