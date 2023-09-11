@@ -14,12 +14,14 @@ for (let itemMenu of itensMenu) {
     itemMenu.addEventListener("mouseover", () => {
         if (!itemMenu.classList.contains("ativo")) {
             const itemAtivo = document.getElementsByClassName("ativo")[0];
-            itemAtivo.classList.add("ativo-hover");
+            if (itemAtivo)
+                itemAtivo.classList.add("ativo-hover");
         }
     });
 
     itemMenu.addEventListener("mouseout", () => {
         const itemAtivo = document.getElementsByClassName("ativo")[0];
-        itemAtivo.classList.remove("ativo-hover");
+        if (itemAtivo)
+            itemAtivo.classList.remove("ativo-hover");
     });
 }
