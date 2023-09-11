@@ -32,3 +32,9 @@ Com isso irá criar uma pasta anônima chamada `.todolist/` e dentro dela dois a
 - Observações:
   - palavras compostas entre aspas ("")
   - formato da data (dd/MM/yyyy)
+
+## FrontEnd
+
+Pode ser visualizado com o link: https://ronanvcjunior.github.io/todolist/frontend/
+
+usa-se o jquery e o select2.
