@@ -12,39 +12,41 @@
 
     <title>Title</title>
 </head>
-<header>
-    <div><a href="index.html" class="logo">ToDo List</a></div>
-    <nav id="nav-header" class="">
-        <ul>
-            <li><a href="index.html" class="item-menu">Tarefas</a></li>
-            <li><a href="categorias.html" class="ativo item-menu">Categorias</a></li>
-        </ul>
-    </nav>
-    <div id="menu-toggle"><i class="fa-solid fa-bars"></i></div>
-</header>
+<body>
+    <header>
+        <div><a href="index.html" class="logo">ToDo List</a></div>
+        <nav id="nav-header" class="">
+            <ul>
+                <li><a href="index.html" class="item-menu">Tarefas</a></li>
+                <li><a href="categorias.html" class="ativo item-menu">Categorias</a></li>
+            </ul>
+        </nav>
+        <div id="menu-toggle"><i class="fa-solid fa-bars"></i></div>
+    </header>
 
-<div class="tabela-container">
-    <div class="tabela-header">
-        <h1 class="tabela-titulo">Categorias</h1>
-        <a href="#" class="tabela-adicionar">Adicionar</a>
+    <div class="tabela-container">
+        <div class="tabela-header">
+            <h1 class="tabela-titulo">Categorias</h1>
+            <a href="#" class="tabela-adicionar">Adicionar</a>
+        </div>
+        <table>
+            <thead>
+            <tr>
+                <th>Nome</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td data-label="Nome">dia a dia</td>
+            </tr>
+            </tbody>
+        </table>
     </div>
-    <table>
-        <thead>
-        <tr>
-            <th>Nome</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-            <td data-label="Nome">dia a dia</td>
-        </tr>
-        </tbody>
-    </table>
-</div>
 
-<footer>
-    <span>Criado por: <a href="https://github.com/ronanvcjunior/" target="_blank">Ronan Vieira do Carmo Junior <i class="fa-brands fa-github"></i></a></span>
-</footer>
+    <footer>
+        <span>Criado por: <a href="https://github.com/ronanvcjunior/" target="_blank">Ronan Vieira do Carmo Junior <i class="fa-brands fa-github"></i></a></span>
+    </footer>
 
-<script src="./assets/js/index.js"></script>
+    <script src="./assets/js/index.js"></script>
+</body>
 </html>

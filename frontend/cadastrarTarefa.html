@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <script src="https://kit.fontawesome.com/a3529174ea.js" crossorigin="anonymous"></script>
+
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+    <link rel="stylesheet" href="./assets/bootstrap/bootstrap.css">
+
+    <link rel="stylesheet" href="./assets/css/estilos.css">
+
+    <title>Title</title>
+</head>
+
+<body>
+    <header>
+        <div><a href="index.html" class="logo">ToDo List</a></div>
+        <nav id="nav-header" class="">
+            <ul>
+                <li><a href="index.html" class="item-menu">Tarefas</a></li>
+                <li><a href="categorias.html" class="item-menu">Categorias</a></li>
+            </ul>
+        </nav>
+        <div id="menu-toggle"><i class="fa-solid fa-bars"></i></div>
+    </header>
+
+    <div class="cadastro-container">
+        <h1 class="cadastro-titulo">Registrar Tarefa</h1>
+
+        <form action="#">
+            <div class="campos campos-2">
+                <div class="campos-input">
+                    <label for="nomeInput">Nome</label>
+                    <input type="text" name="nomeInput" id="nomeInput">
+                </div>
+                <div class="campos-input">
+                    <label for="dataTerminoInput">Data Término</label>
+                    <input type="date" name="dataTerminoInput" id="dataTerminoInput">
+                </div>
+            </div>
+            <div class="campos campos-2">
+                <div class="campos-input">
+                    <label for="prioridadeSelect">Prioridade</label>
+                    <select name="prioridadeSelect" id="prioridadeSelect">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                    </select>
+                </div>
+                <div class="campos-input">
+                    <label for="statusSelect">Status</label>
+                    <select name="statusSelect" id="statusSelect">
+                        <option value="ToDo">ToDo</option>
+                        <option value="Doing">Doing</option>
+                        <option value="Done">Done</option>
+                    </select>
+                </div>
+            </div>
+            <div class="campos campos-1">
+                <div class="campos-input">
+                    <label for="CategoriasSelect">Categorias</label>
+                    <select name="CategoriasSelect" id="CategoriasSelect" multiple="multiple">
+                        <option value="dia a dia">dia a dia</option>
+                        <option value="noite a noite">noite a noite</option>
+                        <option value="tarde a tarde">tarde a tarde</option>
+                    </select>
+                </div>
+            </div>
+            <div class="campos campos-1">
+                <div class="campos-input">
+                    <label for="descricaoTextArea">Descrição</label>
+                    <textarea rows="3" name="descricaoTextArea" id="descricaoTextArea"></textarea>
+                </div>
+            </div>
+
+            <div class="cadastro-btns">
+                <a href="index.html" class="cadastro-btn btn-voltar">Voltar</a>
+                <button type="submit" class="cadastro-btn btn-submeter">Submeter</button>
+            </div>
+        </form>
+    </div>
+
+    <footer>
+        <span>Criado por: <a href="https://github.com/ronanvcjunior/" target="_blank">Ronan Vieira do Carmo Junior <i class="fa-brands fa-github"></i></a></span>
+    </footer>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <script src="./assets/js/index.js"></script>
+    <script src="./assets/js/cadastroTarefa.js"></script>
+</body>
+</html>
