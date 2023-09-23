@@ -31,7 +31,7 @@
     <div class="cadastro-container">
         <h1 class="cadastro-titulo">Registrar Tarefa</h1>
 
-        <form action="#">
+        <form id="formulario">
             <div class="campos campos-2">
                 <div class="campos-input">
                     <label for="nomeInput">Nome</label>
@@ -65,11 +65,7 @@
             <div class="campos campos-1">
                 <div class="campos-input">
                     <label for="CategoriasSelect">Categorias</label>
-                    <select name="CategoriasSelect" id="CategoriasSelect" multiple="multiple">
-                        <option value="dia a dia">dia a dia</option>
-                        <option value="tarde a tarde">tarde a tarde</option>
-                        <option value="noite a noite">noite a noite</option>
-                    </select>
+                    <select name="CategoriasSelect" id="CategoriasSelect" multiple="multiple"></select>
                 </div>
             </div>
             <div class="campos campos-1">
@@ -94,7 +90,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
-    <script src="./assets/js/index.js"></script>
+    <script src="./assets/js/menuToggle.js"></script>
     <script src="./assets/js/cadastroTarefa.js"></script>
 </body>
 </html>
